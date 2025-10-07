@@ -120,8 +120,8 @@ public class Cliente {
                 + "Identificacion: " + getIdentificacion() + "\n"
                 + "Teléfono: " + getTelefono() + "\n"
                 + "Tipo: " + getTipo() + "\n"
-                + "Fecha de Nacimiento: " + getFechaNacimiento() + "\n"
-                + "Correo Electrónico: " + getCorreoElectronico() + "\n";
+                + "Fecha de nacimiento: " + getFechaNacimiento() + "\n"
+                + "Correo electrónico: " + getCorreoElectronico() + "\n";
     }
 
 }
