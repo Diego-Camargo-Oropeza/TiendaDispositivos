@@ -1,9 +1,11 @@
 package pck_tienda_electronicos;
 
+import java.io.Serializable;
 import pck_date.DateClass;
 
-public class Cliente {
+public class Cliente implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     //Variables miembro
     private int idCliente;
     private String nombre;

@@ -1,8 +1,11 @@
 package pck_tienda_electronicos;
 
+import java.io.Serializable;
 import pck_date.DateClass;
 
-public class Venta {
+public class Venta implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     //Variables miembro
     private int idVenta;
@@ -62,7 +65,6 @@ public class Venta {
     public void setFechaEntrega(DateClass fechaEntrega) {
         this.fechaEntrega = fechaEntrega;
     }
-    
 
     //Getters
     public int getIdVenta() {
