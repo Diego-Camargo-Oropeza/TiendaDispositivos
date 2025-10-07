@@ -90,6 +90,6 @@ public class Venta {
                 + "ID del Dispositivo: " + getIdDispositivo() + "\n"
                 + "ID del Cliente" + getIdCliente() + "\n"
                 + "Fecha del pedido: " + getFechaPedido() + "\n"
-                + "Fecha de Entrega: " + getFechaEntrega() + "\n";
+                + "Fecha de entrega: " + getFechaEntrega() + "\n";
     }
 }
