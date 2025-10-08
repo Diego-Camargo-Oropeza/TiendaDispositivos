@@ -46,9 +46,6 @@ public class DispositivosApp {
                 case 1 -> {
 
                 }
-                case 1 -> {
-
-                }
                 case 2 -> {
 
                 }
