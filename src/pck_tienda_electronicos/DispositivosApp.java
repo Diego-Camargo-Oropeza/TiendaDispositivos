@@ -632,7 +632,7 @@ public class DispositivosApp {
                             "Alta de cliente", 3);
                 }
                 case 4 -> {
-// alta de venta
+                    // alta de venta
                     String iv, ic;
                     // id venta
                     do {
@@ -793,15 +793,14 @@ public class DispositivosApp {
                         if (!fechaCorrecta) {
                             JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
                                     "error de entrada", JOptionPane.ERROR_MESSAGE);
-                        }
-                        else if(fpedido.getMonths() > 6){
-                            JOptionPane.showMessageDialog(null, 
+                        } else if (fpedido.getMonths() > 6) {
+                            JOptionPane.showMessageDialog(null,
                                     "El pedido no puede ser de hace mas de 6 meses",
                                     "fecha invalida", JOptionPane.ERROR_MESSAGE);
                         }
-                        
+
                     } while (!fechaCorrecta || fpedido.getMonths() > 6);
-                // fecha entrega
+                    // fecha entrega
                     Period fentrega;
                     do {
                         fechaEntrega = new DateClass();
@@ -877,18 +876,16 @@ public class DispositivosApp {
                         if (!fechaCorrecta) {
                             JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
                                     "error de entrada", JOptionPane.ERROR_MESSAGE);
-                        }
-                        else if(fentrega.getMonths() > 6 || fentrega.getMonths() < -6){
-                            JOptionPane.showMessageDialog(null, 
+                        } else if (fentrega.getMonths() > 6 || fentrega.getMonths() < -6) {
+                            JOptionPane.showMessageDialog(null,
                                     "La fecha de entrega no puede ser de hace mas de 6 meses o dentro de mas de 6 meses",
                                     "fecha invalida", JOptionPane.ERROR_MESSAGE);
-                        }
-                        else if(antesPedido.getMonths() < 0){
-                            JOptionPane.showMessageDialog(null, 
+                        } else if (antesPedido.getMonths() < 0) {
+                            JOptionPane.showMessageDialog(null,
                                     "La fecha de entrega no puede ser antes de la fecha de pedido",
                                     "fecha invalida", JOptionPane.ERROR_MESSAGE);
                         }
-                        
+
                     } while (!fechaCorrecta || fpedido.getMonths() > 6);
 
                 }
