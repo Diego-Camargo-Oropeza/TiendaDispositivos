@@ -1,9 +1,3 @@
-/*
-Desarrollado por:
-Camargo Oropeza Diego
-Licona Ibarra Diego Alejandro
-Villegas Turrubiartes Melinna
-*/
 package pck_tienda_electronicos;
 
 import java.io.Serializable;
@@ -62,3 +56,5 @@ public class Smartphone extends Dispositivo implements Serializable {
     }
 
 }
+
+
