@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import pck_date.DateClass;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
 
 public class DispositivosApp {
 
@@ -528,6 +530,7 @@ public class DispositivosApp {
                     } while (tipo.isEmpty());
                     // fecha de nacimiento
                     boolean fechaCorrecta = false;
+                    boolean menor;
                     do {
                         fechaNacimiento = new DateClass();
                         String ds, ms, as;
@@ -584,9 +587,9 @@ public class DispositivosApp {
                                     continue MENU_LOOP;
                                 }
                                 a = Integer.parseInt(as);
-                                if (a < 1930 || a > aActual - 18) {
+                                if (a < 1930 || a > aActual) {
                                     JOptionPane.showMessageDialog(null, "El anio esta debe de estar "
-                                            + "dentro de 1930 a " + (aActual - 18),
+                                            + "dentro de 1930 a " + aActual,
                                             "error de entrada", JOptionPane.ERROR_MESSAGE);
                                 }
                             } catch (NumberFormatException e) {
@@ -594,14 +597,21 @@ public class DispositivosApp {
                                         + " numerica", "error de entrada",
                                         JOptionPane.ERROR_MESSAGE);
                             }
-                        } while (a < 1930 || a > aActual - 18);
+                        } while (a < 1930 || a > aActual);
                         fechaNacimiento.setDate(d, m, a);
+                        LocalDate birthdate = LocalDate.of(a, m, d);
                         fechaCorrecta = fechaNacimiento.isDateCorrect();
                         if (!fechaCorrecta) {
                             JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
                                     "error de entrada", JOptionPane.ERROR_MESSAGE);
                         }
-                    } while (!fechaCorrecta);
+                        Period age = Period.between(birthdate, date);
+                        menor = (age.getYears() < 18);
+                        if (menor) {
+                            JOptionPane.showMessageDialog(null, "El cliente no puede ser menor de edad",
+                                    "error de entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (!fechaCorrecta || menor);
                     //correo electronico
                     do {
                         correoElectronico = JOptionPane.showInputDialog(null,
@@ -619,11 +629,11 @@ public class DispositivosApp {
                     clientes.add(new Cliente(id, nombre, direccion, identificacion,
                             telefono, tipo, fechaNacimiento, correoElectronico));
                     JOptionPane.showMessageDialog(null, "El cliente fue dado de alta exitosamente\n",
-                                    "Alta de cliente", 3);
+                            "Alta de cliente", 3);
                 }
                 case 4 -> {
 // alta de venta
-                    String iv, idisp, ic;
+                    String iv, ic;
                     // id venta
                     do {
                         id = 0;
@@ -649,7 +659,35 @@ public class DispositivosApp {
                         }
                     } while (id <= 0);
                     // id dispositivo
-                    // ...
+                    do {
+                        valido = true;
+                        idDispositivo = JOptionPane.showInputDialog(null, "ID del dispositivo",
+                                "Alta de Venta", 3);
+                        if (idDispositivo == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        idDispositivo = idDispositivo.trim();
+
+                        boolean noDuped, formato;
+
+                        formato = cadenaValida(idDispositivo, 1);
+                        if (!formato) {
+                            JOptionPane.showMessageDialog(null, "Revisa la entrada, existen caracteres especiales o espacios",
+                                    "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+
+                        noDuped = (posCoincidencia == -1);
+                        if (!noDuped) {
+                            JOptionPane.showMessageDialog(null, "ID duplicado, vuelva a ingresar otro",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        valido = noDuped && formato;
+
+                    } while (!valido);
                     // id cliente
                     do {
                         id = 0;
@@ -732,9 +770,12 @@ public class DispositivosApp {
                                     continue MENU_LOOP;
                                 }
                                 a = Integer.parseInt(as);
-                                if (a < 1930 || a > aActual - 18) {
-                                    JOptionPane.showMessageDialog(null, "El anio esta debe de estar "
-                                            + "dentro de 1930 a " + (aActual - 18),
+                                LocalDate fPedido = LocalDate.of(a, m, d);
+                                if (fPedido.isAfter(date)) {
+                                    JOptionPane.showMessageDialog(null, "El Pedido no pudo haber sido realizado en el futuro",
+                                            "error de entrada", JOptionPane.ERROR_MESSAGE);
+                                } else if (a != aActual) {
+                                    JOptionPane.showMessageDialog(null, "El Pedido tiene que ser de este mismo anio",
                                             "error de entrada", JOptionPane.ERROR_MESSAGE);
                                 }
                             } catch (NumberFormatException e) {
@@ -742,7 +783,7 @@ public class DispositivosApp {
                                         + " numerica", "error de entrada",
                                         JOptionPane.ERROR_MESSAGE);
                             }
-                        } while (a < 1930 || a > aActual - 18);
+                        } while (a != aActual);
                         fechaPedido.setDate(d, m, a);
                         fechaCorrecta = fechaPedido.isDateCorrect();
                         if (!fechaCorrecta) {
@@ -751,7 +792,7 @@ public class DispositivosApp {
                         }
                     } while (!fechaCorrecta);
                     // fecha entrega
-                    
+
                 }
                 case 5 -> {
                     cuenta = 0;
@@ -860,8 +901,8 @@ public class DispositivosApp {
     }
 
     public static int buscarIdCliente(ArrayList<Cliente> clientes, int id) {
-        for(Cliente c : clientes){
-            if(id == c.getIdCliente()){
+        for (Cliente c : clientes) {
+            if (id == c.getIdCliente()) {
                 return clientes.indexOf(c);
             }
         }
@@ -869,8 +910,8 @@ public class DispositivosApp {
     }
 
     public static int buscarIdVenta(ArrayList<Venta> ventas, int id) {
-        for(Venta v : ventas){
-            if(id == v.getIdCliente()){
+        for (Venta v : ventas) {
+            if (id == v.getIdCliente()) {
                 return ventas.indexOf(v);
             }
         }
