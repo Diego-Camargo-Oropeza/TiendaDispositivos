@@ -8,6 +8,8 @@ package pck_tienda_electronicos;
 
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import pck_date.DateClass;
+import java.time.LocalDate;
 
 public class DispositivosApp {
 
@@ -46,8 +48,12 @@ public class DispositivosApp {
         int op, id, memoriaRam, almacenamiento, posCoincidencia;
         float peso, precio, tamanioPantalla;
         String idDispositivo, marca, modelo, sistemaOperativo, nombre, direccion, identificacion, telefono, tipo, correoElectronico;
+        DateClass fechaNacimiento;
         ArrayList<Dispositivo> dispositivos = new ArrayList<>();
+        ArrayList<Cliente> clientes = new ArrayList<>();
         boolean valido;
+        LocalDate date = LocalDate.now();
+        int aActual = date.getYear();
 
         MENU_LOOP:
         do {
@@ -162,7 +168,6 @@ public class DispositivosApp {
                         }
                     } while (precio < 0.0f);
 
-
                 }
 
                 case 2 -> {
@@ -171,11 +176,18 @@ public class DispositivosApp {
                 case 3 -> {
 // alta de cliente
                     do {
+                        // id
+                        String i;
                         id = 0;
                         try {
-                            id = Integer.parseInt(JOptionPane.showInputDialog(null,
+                            i = JOptionPane.showInputDialog(null,
                                     "ID del Cliente: ", "Alta de Cliente",
-                                    3));
+                                    3);
+                            if (i == null) {
+                                JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                            id = Integer.parseInt(i);
                             if (id <= 0) {
                                 JOptionPane.showMessageDialog(null, "El id "
                                         + "debe ser mayor a cero",
@@ -188,27 +200,170 @@ public class DispositivosApp {
                                     + " entrada", JOptionPane.ERROR_MESSAGE);
                         }
                     } while (id <= 0);
-                    
+                    // nombre
                     boolean cadVal;
-                    do{
-                        nombre = JOptionPane.showInputDialog(null, 
+                    do {
+                        nombre = JOptionPane.showInputDialog(null,
                                 "Nombre del cliente", "Alta de un cliente", 3);
+                        if (nombre == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+
                         cadVal = cadenaValida(nombre, 2);
-                        if(cadVal == false){
+                        if (!cadVal) {
                             JOptionPane.showMessageDialog(null, "Ingrese un nombre valido",
                                     "Error de entrada", JOptionPane.WARNING_MESSAGE);
                         }
-                    }while(cadVal == false);
-                    
-                    do{
-                        direccion = JOptionPane.showInputDialog(null, 
+                    } while (!cadVal);
+                    // direccion
+                    do {
+                        direccion = JOptionPane.showInputDialog(null,
                                 "Direccion del cliente", "Alta de un cliente", 3);
-                        if(direccion.isEmpty()){
-                            
+                        if (direccion == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
                         }
-                    }while();
-                    
+                        if (direccion.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Ingrese una direccion",
+                                    "Error de entrada", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (direccion.isEmpty());
+                    // identificacion
+                    do {
+                        identificacion = JOptionPane.showInputDialog(null,
+                                "Identificacion del cliente", "Alta de un cliente", 3);
+                        if (identificacion == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        if (identificacion.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Ingrese una identificacion",
+                                    "Error de entrada", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (identificacion.isEmpty());
+                    // telefono
+                    do {
+                        telefono = JOptionPane.showInputDialog(null,
+                                "Telefono del cliente", "Alta de un cliente", 3);
+                        if (telefono == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+
+                        cadVal = cadenaValida(telefono, 3);
+                        if (!cadVal) {
+                            JOptionPane.showMessageDialog(null, "Ingrese un telefono valido",
+                                    "Error de entrada", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (!cadVal);
+                    // tipo
+                    do {
+                        tipo = JOptionPane.showInputDialog(null,
+                                "Tipo de cliente", "Alta de un cliente", 3);
+                        if (tipo == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        if (tipo.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Ingrese un tipo de cliente",
+                                    "Error de entrada", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (tipo.isEmpty());
+                    // fecha de nacimiento
+                    boolean fechaCorrecta = false;
+                    do {
+                        fechaNacimiento = new DateClass();
+                        String ds, ms, as;
+                        int d, m, a;
+                        do {
+                            d = 0;
+                            try {
+                                ds = JOptionPane.showInputDialog(null,
+                                        "Dia:", "Fecha de Nacimiento", 3);
+                                if (ds == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                d = Integer.parseInt(ds);
+                                if (d <= 0 || d > 31) {
+                                    JOptionPane.showMessageDialog(null, "El dia debe ser mayor a cero y menor a 31",
+                                            "error de entrada",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (d <= 0 || d > 31);
+                        do {
+                            m = 0;
+                            try {
+                                ms = JOptionPane.showInputDialog(null,
+                                        "Mes:", "Fecha de Nacimiento", 3);
+                                if (ms == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                m = Integer.parseInt(ms);
+                                if (m <= 0 || m > 12) {
+                                    JOptionPane.showMessageDialog(null, "El mes debe ser mayor a cero y menor a 12",
+                                            "error de entrada",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (m <= 0 || m > 12);
+                        do {
+                            a = 0;
+                            try {
+                                as = JOptionPane.showInputDialog(null,
+                                        "Anio:", "Fecha de Nacimiento", 3);
+                                if (as == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                a = Integer.parseInt(as);
+                                if (a < 1930 || a > aActual - 18) {
+                                    JOptionPane.showMessageDialog(null, "El anio esta debe de estar "
+                                            + "dentro de 1930 a " + (aActual - 18),
+                                            "error de entrada", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (a < 1930 || a > aActual - 18);
+                        fechaNacimiento.setDate(d, m, a);
+                        fechaCorrecta = fechaNacimiento.isDateCorrect();
+                        if (!fechaCorrecta) {
+                            JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
+                                    "error de entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (!fechaCorrecta);
+                    //correo electronico
+                    do {
+                        correoElectronico = JOptionPane.showInputDialog(null,
+                                "Correo del cliente", "Alta de un cliente", 3);
+                        if (correoElectronico == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        cadVal = cadenaValida(correoElectronico, 4);
+                        if (!cadVal) {
+                            JOptionPane.showMessageDialog(null, "Ingrese un correo valido",
+                                    "Error de entrada", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (!cadVal);
+                    clientes.add(new Cliente(id, nombre, direccion, identificacion,
+                            telefono, tipo, fechaNacimiento, correoElectronico));
                 }
+                
                 case 4 -> {
 // alta de venta
                 }
@@ -284,6 +439,15 @@ public class DispositivosApp {
 
             case 2 -> {
                 return !cadena.isEmpty() && cadena.matches("^[\\p{L}\\p{N} ]*$");
+            }
+            // phone number regex
+            case 3 -> {
+                return !cadena.isEmpty() && cadena.matches("^\\+?[0-9\\s\\-()]{7,20}$");
+
+            }
+            // email regex
+            case 4 -> {
+                return !cadena.isEmpty() && cadena.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
             }
 
             default -> {
