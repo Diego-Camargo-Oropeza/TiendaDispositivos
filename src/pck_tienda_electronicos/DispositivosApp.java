@@ -142,6 +142,27 @@ public class DispositivosApp {
                         }
                     } while (peso < 0.0f || peso > 2000.0f);
 
+                    do {
+                        String p;
+                        precio = -1.0f;
+                        try {
+                            p = JOptionPane.showInputDialog(null, "Ingrese el precio del dispositivo", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                            if (p == null) {
+                                JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                            precio = Float.parseFloat(p);
+                            if (precio < 0.0f) {
+                                JOptionPane.showMessageDialog(null, "El peso del dispositivo debe de ser mayor a 0 y menor que 2000gr", "Error", JOptionPane.ERROR_MESSAGE);
+                                precio = -1.0f;
+                            }
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "La entrada debe de ser numérica", "Error", JOptionPane.ERROR_MESSAGE);
+                            precio = -1.0f;
+                        }
+                    } while (precio < 0.0f);
+
+
                 }
 
                 case 2 -> {
