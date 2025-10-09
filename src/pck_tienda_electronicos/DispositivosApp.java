@@ -48,7 +48,7 @@ public class DispositivosApp {
         int op, id, memoriaRam, almacenamiento, posCoincidencia;
         float peso, precio, tamanioPantalla;
         String idDispositivo, marca, modelo, sistemaOperativo, nombre, direccion, identificacion, telefono, tipo, correoElectronico;
-        DateClass fechaNacimiento;
+        DateClass fechaNacimiento, fechaPedido, fechaEntrega;
         ArrayList<Dispositivo> dispositivos = new ArrayList<>();
         ArrayList<Cliente> clientes = new ArrayList<>();
         boolean valido;
@@ -362,10 +362,140 @@ public class DispositivosApp {
                     } while (!cadVal);
                     clientes.add(new Cliente(id, nombre, direccion, identificacion,
                             telefono, tipo, fechaNacimiento, correoElectronico));
+                    JOptionPane.showMessageDialog(null, "El cliente fue dado de alta exitosamente\n",
+                                    "Alta de cliente", 3);
                 }
-                
                 case 4 -> {
 // alta de venta
+                    String iv, idisp, ic;
+                    // id venta
+                    do {
+                        id = 0;
+                        try {
+                            iv = JOptionPane.showInputDialog(null,
+                                    "ID de la venta: ", "Alta de venta",
+                                    3);
+                            if (iv == null) {
+                                JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                            id = Integer.parseInt(iv);
+                            if (id <= 0) {
+                                JOptionPane.showMessageDialog(null, "El id "
+                                        + "debe ser mayor a cero",
+                                        "Error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "El id"
+                                    + " debe de ser numerico", "Error de"
+                                    + " entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (id <= 0);
+                    // id dispositivo
+                    // ...
+                    // id cliente
+                    do {
+                        id = 0;
+                        try {
+                            ic = JOptionPane.showInputDialog(null,
+                                    "ID de la venta: ", "Alta de venta",
+                                    3);
+                            if (ic == null) {
+                                JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                            id = Integer.parseInt(ic);
+                            if (id <= 0) {
+                                JOptionPane.showMessageDialog(null, "El id "
+                                        + "debe ser mayor a cero",
+                                        "Error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "El id"
+                                    + " debe de ser numerico", "Error de"
+                                    + " entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (id <= 0);
+                    // fecha pedido
+                    boolean fechaCorrecta = false;
+                    do {
+                        fechaPedido = new DateClass();
+                        String ds, ms, as;
+                        int d, m, a;
+                        do {
+                            d = 0;
+                            try {
+                                ds = JOptionPane.showInputDialog(null,
+                                        "Dia:", "Fecha de Pedido", 3);
+                                if (ds == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                d = Integer.parseInt(ds);
+                                if (d <= 0 || d > 31) {
+                                    JOptionPane.showMessageDialog(null, "El dia debe ser mayor a cero y menor a 31",
+                                            "error de entrada",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (d <= 0 || d > 31);
+                        do {
+                            m = 0;
+                            try {
+                                ms = JOptionPane.showInputDialog(null,
+                                        "Mes:", "Fecha de Pedido", 3);
+                                if (ms == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                m = Integer.parseInt(ms);
+                                if (m <= 0 || m > 12) {
+                                    JOptionPane.showMessageDialog(null, "El mes debe ser mayor a cero y menor a 12",
+                                            "error de entrada",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (m <= 0 || m > 12);
+                        do {
+                            a = 0;
+                            try {
+                                as = JOptionPane.showInputDialog(null,
+                                        "Anio:", "Fecha de Pedido", 3);
+                                if (as == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                a = Integer.parseInt(as);
+                                if (a < 1930 || a > aActual - 18) {
+                                    JOptionPane.showMessageDialog(null, "El anio esta debe de estar "
+                                            + "dentro de 1930 a " + (aActual - 18),
+                                            "error de entrada", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (a < 1930 || a > aActual - 18);
+                        fechaPedido.setDate(d, m, a);
+                        fechaCorrecta = fechaPedido.isDateCorrect();
+                        if (!fechaCorrecta) {
+                            JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
+                                    "error de entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (!fechaCorrecta);
+                    // fecha entrega
+                    
                 }
                 case 5 -> {
 
@@ -374,10 +504,10 @@ public class DispositivosApp {
 
                 }
                 case 7 -> {
-
+// listar cliente
                 }
                 case 8 -> {
-
+// listar ventas
                 }
                 case 9 -> {
 
@@ -426,6 +556,24 @@ public class DispositivosApp {
                 if (id.equals(l.getIdDispositivo())) {
                     return dispositivos.indexOf(dis);
                 }
+            }
+        }
+        return -1;
+    }
+
+    public static int buscarIdCliente(ArrayList<Cliente> clientes, int id) {
+        for(Cliente c : clientes){
+            if(id == c.getIdCliente()){
+                return clientes.indexOf(c);
+            }
+        }
+        return -1;
+    }
+
+    public static int buscarIdVenta(ArrayList<Venta> ventas, int id) {
+        for(Venta v : ventas){
+            if(id == v.getIdCliente()){
+                return ventas.indexOf(v);
             }
         }
         return -1;
