@@ -937,17 +937,79 @@ public class DispositivosApp {
                     }
 
                 }
+
                 //Case lista cliente
                 case 7 -> {
+
+                    listaCliente = "         LISTA DE CLIENTES        \n"
+                            + "IdCliente    Nombre       Identificación        Tipo         Teléfono         FechaNacimiento\n";
+                    if (clientes.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen clientes dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        for (Cliente cl : clientes) {
+
+                            listaCliente += cl.getIdCliente() + "         " + cl.getNombre() + "          " + cl.getIdentificacion() + "         " + cl.getTipo() + "       " + cl.getTelefono()
+                                    + "      " + cl.getFechaNacimiento() + "\n";
+
+                        }
+                        JOptionPane.showMessageDialog(null, listaCliente, "Lista de Laptops", JOptionPane.INFORMATION_MESSAGE);
+                    }
 // listar cliente
                 }
                 case 8 -> {
-// listar ventas
+
+                    listaVenta = "         LISTA DE VENTAS        \n"
+                            + "IdVenta          IdDispositivo         IdCliente          Fecha Pedido         Fecha Entrega\n";
+                    if (dispositivos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen dispositivos dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        for (Cliente cl : clientes) {
+                            listaVenta += cl.getIdCliente() + "         " + cl.getNombre() + "          " + cl.getIdentificacion() + "         " + cl.getTipo() + "       " + cl.getTelefono()
+                                    + "      " + cl.getFechaNacimiento() + "\n";
+
+                        }
+
+                        JOptionPane.showMessageDialog(null, listaVenta, "Lista de Laptops", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
                 }
+
                 case 9 -> {
+                    if (dispositivos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen dispositivos dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        idDispositivo = JOptionPane.showInputDialog("Ingrese el ID del Smartphone a buscar");
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+                        if (posCoincidencia != -1) {
+                            if (dispositivos.get(posCoincidencia) instanceof Smartphone s) {
+                                JOptionPane.showMessageDialog(null, s.getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "El ID pertenece al registro de Laptops", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No existen coincidencias", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
 
                 }
                 case 10 -> {
+
+                    if (dispositivos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen dispositivos dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        idDispositivo = JOptionPane.showInputDialog("Ingrese el ID de la Laptop a buscar");
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+                        if (posCoincidencia != -1) {
+                            if (dispositivos.get(posCoincidencia) instanceof Laptop l) {
+                                JOptionPane.showMessageDialog(null, "Coincidencia encontrada, mostrando datos", "Datos encontrados", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(null, l.getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "El ID pertenece al registro de Smartphones", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No existen coincidencias", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
 
                 }
                 case 11 -> {
