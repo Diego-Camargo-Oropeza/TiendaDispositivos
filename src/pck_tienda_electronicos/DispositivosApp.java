@@ -937,6 +937,7 @@ public class DispositivosApp {
                     }
 
                 }
+                //Case lista cliente
                 case 7 -> {
 // listar cliente
                 }
