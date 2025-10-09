@@ -55,7 +55,7 @@ public class DispositivosApp {
             + "Por favor seleccione una opción\n";
 
     public static void main(String[] args) {
-        int op, id, memoriaRam, almacenamiento, posCoincidencia, cuenta;
+        int op, id = 0, memoriaRam, almacenamiento, posCoincidencia, cuenta;
         float peso, precio, tamanioPantalla;
         String idDispositivo, marca, modelo, sistemaOperativo, nombre, direccion, identificacion, telefono, tipo, correoElectronico, procesador, tarjetaGrafica;
         String tablaSmartphone, tablaLaptop, listaCliente, listaVenta;
@@ -1014,20 +1014,53 @@ public class DispositivosApp {
                 }
                 case 11 -> {
 
+                    String idH = "";
+                    valido = true;
+                    if (clientes.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen clientes dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        idH = JOptionPane.showInputDialog("Ingrese el ID del cliente a buscar");
+                        if (idH == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            continue MENU_LOOP;
+                        }
+                        do {
+                            try {
+                                id = Integer.parseInt(idH);
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "El ID de los clientes es un dato numérico", "Error", JOptionPane.ERROR_MESSAGE);
+                                valido = false;
+                            }
+                        } while (!valido);
+
+                        posCoincidencia = buscarIdCliente(clientes, id);
+                        if (posCoincidencia != -1) {
+                            JOptionPane.showMessageDialog(null, "Coincidencia encontrada, mostrando datos", "Datos encontrados", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, clientes.get(posCoincidencia).getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No se encontraron coincidencias", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
                 }
+
                 case 12 -> {
+                    //DETALLE DE VENTA PENDIENTE
 
                 }
                 case 13 -> {
+                    //ELIMINAR SMARTPHONE
 
                 }
                 case 14 -> {
+                    //ELIMINAR LAPTOP
 
                 }
                 case 15 -> {
+                    //ELIMINAR CLIENTE
 
                 }
                 case 16 -> {
+                    //ELIMINAR VENTA
 
                 }
                 case 17 -> {
