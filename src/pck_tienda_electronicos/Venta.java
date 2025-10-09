@@ -1,3 +1,9 @@
+/*
+Desarrollado por:
+Camargo Oropeza Diego
+Licona Ibarra Diego Alejandro
+Villegas Turrubiartes Melinna
+ */
 package pck_tienda_electronicos;
 
 import java.io.Serializable;
@@ -9,17 +15,17 @@ public class Venta implements Serializable {
 
     //Variables miembro
     private int idVenta;
-    private int idDispositivo;
+    private String idDispositivo;
     private int idCliente;
     private DateClass fechaPedido;
     private DateClass fechaEntrega;
 
     //Constructores
     public Venta() {
-        this(0, 0, 0, 1, 1, 1960, 1, 1, 1970);
+        this(0, null, 0, 1, 1, 1960, 1, 1, 1970);
     }
 
-    public Venta(int idVenta, int idDispositivo, int idCliente, DateClass fechaPedido, DateClass fechaEntrega) {
+    public Venta(int idVenta, String idDispositivo, int idCliente, DateClass fechaPedido, DateClass fechaEntrega) {
         this.idVenta = idVenta;
         this.idDispositivo = idDispositivo;
         this.idCliente = idCliente;
@@ -27,7 +33,7 @@ public class Venta implements Serializable {
         this.fechaEntrega = new DateClass();
     }
 
-    public Venta(int idVenta, int idDispositivo, int idCliente, int d, int m, int a, int d2, int m2, int a2) {
+    public Venta(int idVenta, String idDispositivo, int idCliente, int d, int m, int a, int d2, int m2, int a2) {
         this.idVenta = idVenta;
         this.idDispositivo = idDispositivo;
         this.idCliente = idCliente;
@@ -40,7 +46,7 @@ public class Venta implements Serializable {
         this.idVenta = idVenta;
     }
 
-    public void setIdDispositivo(int idDispositivo) {
+    public void setIdDispositivo(String idDispositivo) {
         this.idDispositivo = idDispositivo;
     }
 
@@ -71,7 +77,7 @@ public class Venta implements Serializable {
         return idVenta;
     }
 
-    public int getIdDispositivo() {
+    public String getIdDispositivo() {
         return idDispositivo;
     }
 

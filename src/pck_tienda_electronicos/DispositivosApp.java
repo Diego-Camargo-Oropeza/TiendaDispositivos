@@ -1,12 +1,18 @@
+/*
+Desarrollado por:
+Camargo Oropeza Diego
+Licona Ibarra Diego Alejandro
+Villegas Turrubiartes Melinna
+ */
 package pck_tienda_electronicos;
 
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import pck_helper.FileHelper;
 
 public class DispositivosApp {
 
-    public static final String MENU = "1) Alta de un smartphone\n"
+    public static final String MENU
+            = "1) Alta de un smartphone\n"
             + "2) Alta de una laptop\n"
             + "3) Alta de un cliente\n"
             + "4) Alta de una venta\n"
@@ -26,7 +32,12 @@ public class DispositivosApp {
             + "Por favor seleccione una opción\n";
 
     public static void main(String[] args) {
-        int op;
+        int op, id, memoriaRam, almacenamiento, posCoincidencia;
+        float peso, precio, tamanioPantalla;
+        String idDispositivo, marca, modelo, sistemaOperativo, nombre, direccion, identificacion, telefono, tipo, correoElectronico;
+        ArrayList<Dispositivo> dispositivos = new ArrayList<>();
+        boolean valido;
+
         do {
             do {
                 op = 0;
@@ -38,12 +49,61 @@ public class DispositivosApp {
                     }
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Por favor ingrese numéricamente la opción a elegir", "Error", JOptionPane.ERROR_MESSAGE);
-
                 }
             } while (op == 0);
 
             switch (op) {
                 case 1 -> {
+                    JOptionPane.showMessageDialog(null, "Alta de un smartphone");
+
+                    do {
+                        idDispositivo = JOptionPane.showInputDialog(null, "Por favor, ingrese el ID del Smartphone", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                        if (idDispositivo == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            break;
+                        }
+                        //Corta espacios en blanco antes y después de la cadena ej. "  Hola   " -> "Hola"
+                        idDispositivo = idDispositivo.trim();
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+                        if (posCoincidencia != -1) {
+                            JOptionPane.showMessageDialog(null, "ID duplicado, vuelva a ingresar otro", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        valido = cadenaValida(idDispositivo, 1);
+                        if (!valido) {
+                            JOptionPane.showMessageDialog(null, "Revisa la entrada, existen caracteres especiales o espacios", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (!valido);
+
+                    do {
+                        marca = JOptionPane.showInputDialog(null, "Marca del Smartphone", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                        if (marca == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            break;
+                        }
+
+                        valido = cadenaValida(marca, 2);
+                        if (!valido) {
+                            JOptionPane.showMessageDialog(null, "Revisa la entrada, existen caracteres especiales o espacios", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (!valido);
+
+                    do {
+                        modelo = JOptionPane.showInputDialog(null, "Modelo del Smartphone", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                        if (modelo == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                            break;
+                        }
+                        valido = cadenaValida(modelo, 2);
+                        if (!valido) {
+                            JOptionPane.showMessageDialog(null, "Revisa la entrada, existen caracteres especiales o espacios", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    } while (!valido);
+
+                    sistemaOperativo = JOptionPane.showInputDialog(null, "Sistema Operativo", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                    if (sistemaOperativo == null) {
+                        JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                        break;
+                    }
 
                 }
                 case 2 -> {
@@ -102,4 +162,37 @@ public class DispositivosApp {
         } while (op != 17);
 
     }
+
+    public static int buscarId(ArrayList<Dispositivo> dispositivos, String id) {
+        for (Dispositivo dis : dispositivos) {
+            if (dis instanceof Smartphone s) {
+                if (id.equals(s.getIdDispositivo())) {
+                    return dispositivos.indexOf(dis);
+                }
+            }
+            if (dis instanceof Laptop l) {
+                if (id.equals(l.getIdDispositivo())) {
+                    return dispositivos.indexOf(dis);
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static boolean cadenaValida(String cadena, int dec) {
+        switch (dec) {
+            case 1 -> {
+                return !cadena.isEmpty() && cadena.matches("^[A-Za-z0-9]+$");
+            }
+
+            case 2 -> {
+                return !cadena.isEmpty() && cadena.matches("^[\\p{L}\\p{N} ]*$");
+            }
+
+            default -> {
+                return false;
+            }
+        }
+    }
+
 }
