@@ -713,7 +713,9 @@ public class DispositivosApp {
                         }
                     } while (id <= 0);
                     // fecha pedido
+                    LocalDate localDPedido;
                     boolean fechaCorrecta = false;
+                    Period fpedido;
                     do {
                         fechaPedido = new DateClass();
                         String ds, ms, as;
@@ -772,7 +774,7 @@ public class DispositivosApp {
                                 a = Integer.parseInt(as);
                                 LocalDate fPedido = LocalDate.of(a, m, d);
                                 if (fPedido.isAfter(date)) {
-                                    JOptionPane.showMessageDialog(null, "El Pedido no pudo haber sido realizado en el futuro",
+                                    JOptionPane.showMessageDialog(null, "El Pedido no pudo haber sido realizado despues de la fecha de hoy",
                                             "error de entrada", JOptionPane.ERROR_MESSAGE);
                                 } else if (a != aActual) {
                                     JOptionPane.showMessageDialog(null, "El Pedido tiene que ser de este mismo anio",
@@ -785,13 +787,109 @@ public class DispositivosApp {
                             }
                         } while (a != aActual);
                         fechaPedido.setDate(d, m, a);
+                        localDPedido = LocalDate.of(a, m, d);
+                        fpedido = Period.between(localDPedido, date);
                         fechaCorrecta = fechaPedido.isDateCorrect();
                         if (!fechaCorrecta) {
                             JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
                                     "error de entrada", JOptionPane.ERROR_MESSAGE);
                         }
-                    } while (!fechaCorrecta);
-                    // fecha entrega
+                        else if(fpedido.getMonths() > 6){
+                            JOptionPane.showMessageDialog(null, 
+                                    "El pedido no puede ser de hace mas de 6 meses",
+                                    "fecha invalida", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                    } while (!fechaCorrecta || fpedido.getMonths() > 6);
+                // fecha entrega
+                    Period fentrega;
+                    do {
+                        fechaEntrega = new DateClass();
+                        String ds, ms, as;
+                        int d, m, a;
+                        do {
+                            d = 0;
+                            try {
+                                ds = JOptionPane.showInputDialog(null,
+                                        "Dia:", "Fecha de Entrega", 3);
+                                if (ds == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                d = Integer.parseInt(ds);
+                                if (d <= 0 || d > 31) {
+                                    JOptionPane.showMessageDialog(null, "El dia debe ser mayor a cero y menor a 31",
+                                            "error de entrada",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (d <= 0 || d > 31);
+                        do {
+                            m = 0;
+                            try {
+                                ms = JOptionPane.showInputDialog(null,
+                                        "Mes:", "Fecha de Entrega", 3);
+                                if (ms == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                m = Integer.parseInt(ms);
+                                if (m <= 0 || m > 12) {
+                                    JOptionPane.showMessageDialog(null, "El mes debe ser mayor a cero y menor a 12",
+                                            "error de entrada",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (m <= 0 || m > 12);
+                        do {
+                            a = 0;
+                            try {
+                                as = JOptionPane.showInputDialog(null,
+                                        "Anio:", "Fecha de Entrega", 3);
+                                if (as == null) {
+                                    JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                    continue MENU_LOOP;
+                                }
+                                a = Integer.parseInt(as);
+                                LocalDate fEntrega = LocalDate.of(a, m, d);
+                                if (a < 2025 || a > 2026) {
+                                    JOptionPane.showMessageDialog(null, "El anio debe de estar entre 2025 2026",
+                                            "error de entrada", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
+                                        + " numerica", "error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (a < 2025 || a > 2026);
+                        fechaEntrega.setDate(d, m, a);
+                        fentrega = Period.between(LocalDate.of(a, m, d), date);
+                        fechaCorrecta = fechaEntrega.isDateCorrect();
+                        Period antesPedido = Period.between(LocalDate.of(a, m, d), localDPedido);
+                        if (!fechaCorrecta) {
+                            JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
+                                    "error de entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else if(fentrega.getMonths() > 6 || fentrega.getMonths() < -6){
+                            JOptionPane.showMessageDialog(null, 
+                                    "La fecha de entrega no puede ser de hace mas de 6 meses o dentro de mas de 6 meses",
+                                    "fecha invalida", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else if(antesPedido.getMonths() < 0){
+                            JOptionPane.showMessageDialog(null, 
+                                    "La fecha de entrega no puede ser antes de la fecha de pedido",
+                                    "fecha invalida", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                    } while (!fechaCorrecta || fpedido.getMonths() > 6);
 
                 }
                 case 5 -> {
