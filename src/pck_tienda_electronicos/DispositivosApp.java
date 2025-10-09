@@ -110,10 +110,48 @@ public class DispositivosApp {
 
                 }
                 case 3 -> {
-
+// alta de cliente
+                    do {
+                        id = 0;
+                        try {
+                            id = Integer.parseInt(JOptionPane.showInputDialog(null,
+                                    "ID del Cliente: ", "Alta de Cliente",
+                                    3));
+                            if (id <= 0) {
+                                JOptionPane.showMessageDialog(null, "El id "
+                                        + "debe ser mayor a cero",
+                                        "Error de entrada",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "El id"
+                                    + " debe de ser numerico", "Error de"
+                                    + " entrada", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (id <= 0);
+                    
+                    boolean cadVal;
+                    do{
+                        nombre = JOptionPane.showInputDialog(null, 
+                                "Nombre del cliente", "Alta de un cliente", 3);
+                        cadVal = cadenaValida(nombre, 2);
+                        if(cadVal == false){
+                            JOptionPane.showMessageDialog(null, "Ingrese un nombre valido",
+                                    "Error de entrada", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }while(cadVal == false);
+                    
+                    do{
+                        direccion = JOptionPane.showInputDialog(null, 
+                                "Direccion del cliente", "Alta de un cliente", 3);
+                        if(direccion.isEmpty()){
+                            
+                        }
+                    }while();
+                    
                 }
                 case 4 -> {
-
+// alta de venta
                 }
                 case 5 -> {
 
