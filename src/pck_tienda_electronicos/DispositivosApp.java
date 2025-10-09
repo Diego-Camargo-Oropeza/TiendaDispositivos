@@ -11,6 +11,17 @@ import javax.swing.JOptionPane;
 
 public class DispositivosApp {
 
+    // Decláralo como constante en la clase
+    private static final Object[] SO_OPCIONES = {
+        "Android",
+        "iOS",
+        "HarmonyOS",
+        "KaiOS",
+        "Sailfish OS",
+        "Windows Phone (legacy)",
+        "Firefox OS (legacy)"
+    };
+
     public static final String MENU
             = "1) Alta de un smartphone\n"
             + "2) Alta de una laptop\n"
@@ -38,6 +49,7 @@ public class DispositivosApp {
         ArrayList<Dispositivo> dispositivos = new ArrayList<>();
         boolean valido;
 
+        MENU_LOOP:
         do {
             do {
                 op = 0;
@@ -47,6 +59,7 @@ public class DispositivosApp {
                         JOptionPane.showMessageDialog(null, "Por favor ingrese una opción válida", "Error", JOptionPane.ERROR_MESSAGE);
                         op = 0;
                     }
+
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Por favor ingrese numéricamente la opción a elegir", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -57,10 +70,11 @@ public class DispositivosApp {
                     JOptionPane.showMessageDialog(null, "Alta de un smartphone");
 
                     do {
+                        valido = false;
                         idDispositivo = JOptionPane.showInputDialog(null, "Por favor, ingrese el ID del Smartphone", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
                         if (idDispositivo == null) {
                             JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
-                            break;
+                            continue MENU_LOOP;
                         }
                         //Corta espacios en blanco antes y después de la cadena ej. "  Hola   " -> "Hola"
                         idDispositivo = idDispositivo.trim();
@@ -75,10 +89,11 @@ public class DispositivosApp {
                     } while (!valido);
 
                     do {
+                        valido = false;
                         marca = JOptionPane.showInputDialog(null, "Marca del Smartphone", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
                         if (marca == null) {
                             JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
-                            break;
+                            continue MENU_LOOP;
                         }
 
                         valido = cadenaValida(marca, 2);
@@ -88,10 +103,11 @@ public class DispositivosApp {
                     } while (!valido);
 
                     do {
+                        valido = false;
                         modelo = JOptionPane.showInputDialog(null, "Modelo del Smartphone", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
                         if (modelo == null) {
                             JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
-                            break;
+                            continue MENU_LOOP;
                         }
                         valido = cadenaValida(modelo, 2);
                         if (!valido) {
@@ -99,13 +115,56 @@ public class DispositivosApp {
                         }
                     } while (!valido);
 
-                    sistemaOperativo = JOptionPane.showInputDialog(null, "Sistema Operativo", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
-                    if (sistemaOperativo == null) {
+                    Object selSO = JOptionPane.showInputDialog(null, "Sistema Operativo", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE, null, SO_OPCIONES, SO_OPCIONES[0]);
+                    if (selSO == null) {
                         JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
-                        break;
+                        continue MENU_LOOP;
                     }
+                    sistemaOperativo = selSO.toString();
+
+                    do {
+                        String p;
+                        peso = -1.0f;
+                        try {
+                            p = JOptionPane.showInputDialog(null, "Ingrese el peso del dispositivo en gramos", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                            if (p == null) {
+                                JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                            peso = Float.parseFloat(p);
+                            if (peso < 0.0f || peso > 2000.0f) {
+                                JOptionPane.showMessageDialog(null, "El peso del dispositivo debe de ser mayor a 0 y menor que 2000gr", "Error", JOptionPane.ERROR_MESSAGE);
+                                peso = -1.0f;
+                            }
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "La entrada debe de ser numérica", "Error", JOptionPane.ERROR_MESSAGE);
+                            peso = -1.0f;
+                        }
+                    } while (peso < 0.0f || peso > 2000.0f);
+
+                    do {
+                        String p;
+                        precio = -1.0f;
+                        try {
+                            p = JOptionPane.showInputDialog(null, "Ingrese el precio del dispositivo", "Alta de Smartphone", JOptionPane.QUESTION_MESSAGE);
+                            if (p == null) {
+                                JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                            precio = Float.parseFloat(p);
+                            if (precio < 0.0f) {
+                                JOptionPane.showMessageDialog(null, "El peso del dispositivo debe de ser mayor a 0 y menor que 2000gr", "Error", JOptionPane.ERROR_MESSAGE);
+                                precio = -1.0f;
+                            }
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "La entrada debe de ser numérica", "Error", JOptionPane.ERROR_MESSAGE);
+                            precio = -1.0f;
+                        }
+                    } while (precio < 0.0f);
+
 
                 }
+
                 case 2 -> {
 
                 }
