@@ -6,6 +6,13 @@ Villegas Turrubiartes Melinna
  */
 package pck_tienda_electronicos;
 
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import pck_date.DateClass;
@@ -56,6 +63,7 @@ public class DispositivosApp {
             + "Por favor seleccione una opción\n";
 
     public static void main(String[] args) {
+
         int op, id = 0, idCliente = 0, memoriaRam, almacenamiento, posCoincidencia, cuenta;
         float peso, precio, tamanioPantalla;
         String idDispositivo, marca, modelo, sistemaOperativo, nombre, direccion, identificacion, telefono, tipo, correoElectronico, procesador, tarjetaGrafica;
@@ -64,6 +72,84 @@ public class DispositivosApp {
         ArrayList<Dispositivo> dispositivos = new ArrayList<>();
         ArrayList<Cliente> clientes = new ArrayList<>();
         ArrayList<Venta> ventas = new ArrayList<>();
+
+        // ====== READ: Dispositivos ======
+        FileInputStream finD = null;
+        try {
+            finD = new FileInputStream("Dispositivos.txt");
+            ObjectInputStream inD = new ObjectInputStream(finD);
+            while (true) {
+                dispositivos.add((Dispositivo) inD.readObject());
+            }
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Class not found\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "File not found\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (EOFException e) {
+            JOptionPane.showMessageDialog(null, "Finished reading Dispositivos\nError: " + e.getMessage(), "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error while trying to read file Dispositivos\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (finD != null) {
+                    finD.close();
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error while trying to close Dispositivos\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+// ====== READ: Clientes ======
+        FileInputStream finC = null;
+        try {
+            finC = new FileInputStream("Clientes.txt");
+            ObjectInputStream inC = new ObjectInputStream(finC);
+            while (true) {
+                clientes.add((Cliente) inC.readObject());
+            }
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Class not found\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "File not found\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (EOFException e) {
+            JOptionPane.showMessageDialog(null, "Finished reading Clientes\nError: " + e.getMessage(), "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error while trying to read file Clientes\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (finC != null) {
+                    finC.close();
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error while trying to close Clientes\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+// ====== READ: Ventas ======
+        FileInputStream finV = null;
+        try {
+            finV = new FileInputStream("Ventas.txt");
+            ObjectInputStream inV = new ObjectInputStream(finV);
+            while (true) {
+                ventas.add((Venta) inV.readObject());
+            }
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Class not found\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "File not found\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (EOFException e) {
+            JOptionPane.showMessageDialog(null, "Finished reading Ventas\nError: " + e.getMessage(), "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error while trying to read file Ventas\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (finV != null) {
+                    finV.close();
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error while trying to close Ventas\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
         boolean valido;
         LocalDate date = LocalDate.now();
@@ -255,6 +341,7 @@ public class DispositivosApp {
 
                     dispositivos.add(new Smartphone(idDispositivo, marca, modelo, sistemaOperativo, peso, precio, memoriaRam, almacenamiento, tamanioPantalla));
                     JOptionPane.showMessageDialog(null, "Dispositivo registrado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    guardarDispositivos(dispositivos);
 
                 }
 
@@ -430,6 +517,7 @@ public class DispositivosApp {
                     dispositivos.add(new Laptop(idDispositivo, marca, modelo, sistemaOperativo, peso, precio, memoriaRam, procesador, tarjetaGrafica));
 
                     JOptionPane.showMessageDialog(null, "Laptop registrada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    guardarDispositivos(dispositivos);
 
                 }
 
@@ -648,6 +736,7 @@ public class DispositivosApp {
                             telefono, tipo, fechaNacimiento, correoElectronico));
                     JOptionPane.showMessageDialog(null, "El cliente fue dado de alta exitosamente\n",
                             "Alta de cliente", 3);
+                    guardarClientes(clientes);
                 }
                 case 4 -> {
 
@@ -935,6 +1024,7 @@ public class DispositivosApp {
                     ventas.add(new Venta(id, idDispositivo, idCliente, fechaPedido, fechaEntrega));
                     JOptionPane.showMessageDialog(null, "La venta fue dada de alta exitosamente\n",
                             "Alta de cliente", 3);
+                    guardarVentas(ventas);
 
                 }
                 case 5 -> {
@@ -1155,6 +1245,7 @@ public class DispositivosApp {
                                 if (eliminado) {
                                     dispositivos.remove(posCoincidencia);
                                     JOptionPane.showMessageDialog(null, "El dispositivo junto con todas sus referencias han sido eliminadas correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                    guardarDispositivos(dispositivos);
                                 } else {
                                     JOptionPane.showMessageDialog(null, "Existió un error al eliminar...", "Error", JOptionPane.ERROR_MESSAGE);
                                 }
@@ -1170,6 +1261,7 @@ public class DispositivosApp {
                             if (res == JOptionPane.YES_NO_OPTION) {
                                 dispositivos.remove(posCoincidencia);
                                 JOptionPane.showMessageDialog(null, "El dispositivo ha sido eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                guardarDispositivos(dispositivos);
                             } else if (res == JOptionPane.NO_OPTION) {
                                 JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
                                 continue MENU_LOOP;
@@ -1214,6 +1306,7 @@ public class DispositivosApp {
                                 if (eliminado) {
                                     dispositivos.remove(posCoincidencia);
                                     JOptionPane.showMessageDialog(null, "El dispositivo junto con todas sus referencias han sido eliminadas correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                    guardarDispositivos(dispositivos);
                                 } else {
                                     JOptionPane.showMessageDialog(null, "Existió un error al eliminar...", "Error", JOptionPane.ERROR_MESSAGE);
                                 }
@@ -1229,6 +1322,7 @@ public class DispositivosApp {
                             if (res == JOptionPane.YES_NO_OPTION) {
                                 dispositivos.remove(posCoincidencia);
                                 JOptionPane.showMessageDialog(null, "El dispositivo ha sido eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                guardarDispositivos(dispositivos);
                             } else if (res == JOptionPane.NO_OPTION) {
                                 JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
                                 continue MENU_LOOP;
@@ -1282,10 +1376,10 @@ public class DispositivosApp {
                         JOptionPane.showMessageDialog(null, "Este cliente está referenciado en al menos un registro de venta, al aceptar se eliminarán todos los registros de venta que hagan referencia al mismo cliente", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?", "Eliminar Cliente", JOptionPane.YES_NO_OPTION);
                         if (res == JOptionPane.YES_OPTION) {
-                            eliminado = eliminarVentaEnCascada(ventas, idCliente); // elimina ventas del cliente
-                            // procedemos a borrar el cliente
+                            eliminado = eliminarVentaEnCascada(ventas, idCliente);
                             clientes.remove(posCoincidencia);
                             JOptionPane.showMessageDialog(null, "El cliente y todas sus referencias han sido eliminados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            guardarClientes(clientes);
                         } else {
                             JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
                             continue MENU_LOOP;
@@ -1296,6 +1390,7 @@ public class DispositivosApp {
                         if (res == JOptionPane.YES_OPTION) {
                             clientes.remove(posCoincidencia);
                             JOptionPane.showMessageDialog(null, "El cliente ha sido eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            guardarClientes(clientes);
                         } else {
                             JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
                             continue MENU_LOOP;
@@ -1344,6 +1439,8 @@ public class DispositivosApp {
                     if (res == JOptionPane.YES_OPTION) {
                         ventas.remove(posVenta);
                         JOptionPane.showMessageDialog(null, "La venta ha sido eliminada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        guardarVentas(ventas);
+
                     } else {
                         JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
                         continue MENU_LOOP;
@@ -1461,6 +1558,90 @@ public class DispositivosApp {
 
             default -> {
                 return false;
+            }
+        }
+    }
+
+    public static void guardarDispositivos(ArrayList<Dispositivo> dispositivos) {
+        FileOutputStream fout = null;
+        ObjectOutputStream out = null;
+        try {
+            fout = new FileOutputStream("Dispositivos.txt");
+            out = new ObjectOutputStream(fout);
+            for (Dispositivo d : dispositivos) {
+                out.writeObject(d);
+            }
+            JOptionPane.showMessageDialog(null, "Éxito al crear archivo", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error al intentar crear archivo Dispositivos\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error en alguna E/S\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fout != null) {
+                    fout.close();
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error intentando cerrar el archivo\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public static void guardarClientes(ArrayList<Cliente> clientes) {
+        FileOutputStream fout = null;
+        ObjectOutputStream out = null;
+        try {
+            fout = new FileOutputStream("Clientes.txt");
+            out = new ObjectOutputStream(fout);
+            for (Cliente c : clientes) {
+                out.writeObject(c);
+            }
+            JOptionPane.showMessageDialog(null, "Éxito al crear archivo", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error al intentar crear archivo Clientes\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error en alguna E/S\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fout != null) {
+                    fout.close();
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error intentando cerrar el archivo\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public static void guardarVentas(ArrayList<Venta> ventas) {
+        FileOutputStream fout = null;
+        ObjectOutputStream out = null;
+        try {
+            fout = new FileOutputStream("Ventas.txt");
+            out = new ObjectOutputStream(fout);
+            for (Venta v : ventas) {
+                out.writeObject(v);
+            }
+            JOptionPane.showMessageDialog(null, "Éxito al crear archivo", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error al intentar crear archivo Ventas\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error en alguna E/S\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fout != null) {
+                    fout.close();
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error intentando cerrar el archivo\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
