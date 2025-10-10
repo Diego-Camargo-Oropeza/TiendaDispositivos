@@ -29,8 +29,8 @@ public class Venta implements Serializable {
         this.idVenta = idVenta;
         this.idDispositivo = idDispositivo;
         this.idCliente = idCliente;
-        this.fechaPedido = new DateClass();
-        this.fechaEntrega = new DateClass();
+        this.fechaPedido = fechaPedido;
+        this.fechaEntrega = fechaEntrega;
     }
 
     public Venta(int idVenta, String idDispositivo, int idCliente, int d, int m, int a, int d2, int m2, int a2) {

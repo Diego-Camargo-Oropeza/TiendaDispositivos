@@ -34,7 +34,7 @@ public class Cliente implements Serializable {
         this.identificacion = identificacion;
         this.telefono = telefono;
         this.tipo = tipo;
-        this.fechaNacimiento = new DateClass();
+        this.fechaNacimiento = fechaNacimiento;
         this.correoElectronico = correoElectronico;
     }
 

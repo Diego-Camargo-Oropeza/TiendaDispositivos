@@ -12,6 +12,7 @@ import pck_date.DateClass;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Period;
+import java.time.format.DateTimeParseException;
 
 public class DispositivosApp {
 
@@ -537,7 +538,8 @@ public class DispositivosApp {
                     } while (tipo.isEmpty());
                     // fecha de nacimiento
                     boolean fechaCorrecta = false;
-                    boolean menor;
+                    boolean menor = false;
+                    DATE_LOOP:
                     do {
                         fechaNacimiento = new DateClass();
                         String ds, ms, as;
@@ -563,6 +565,7 @@ public class DispositivosApp {
                                         JOptionPane.ERROR_MESSAGE);
                             }
                         } while (d <= 0 || d > 31);
+
                         do {
                             m = 0;
                             try {
@@ -600,13 +603,21 @@ public class DispositivosApp {
                                             "error de entrada", JOptionPane.ERROR_MESSAGE);
                                 }
                             } catch (NumberFormatException e) {
-                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos"
-                                        + " numerica", "error de entrada",
+                                JOptionPane.showMessageDialog(null, "Los datos de la fecha deben ser numericos", "Error de entrada",
                                         JOptionPane.ERROR_MESSAGE);
                             }
                         } while (a < 1930 || a > aActual);
                         fechaNacimiento.setDate(d, m, a);
-                        LocalDate birthdate = LocalDate.of(a, m, d);
+                        System.out.print(fechaNacimiento.getDate());
+                        LocalDate birthdate = LocalDate.now();
+                        try {
+                            birthdate = LocalDate.of(a, m, d);
+                        } catch (java.time.DateTimeException ex) {
+                            JOptionPane.showMessageDialog(null, "El mes de Febrero no tiene más de 29 días", "Error de entrada",
+                                    JOptionPane.ERROR_MESSAGE);
+                            fechaCorrecta = false;
+                            continue DATE_LOOP;
+                        }
                         fechaCorrecta = fechaNacimiento.isDateCorrect();
                         if (!fechaCorrecta) {
                             JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
@@ -834,6 +845,7 @@ public class DispositivosApp {
                     } while (!fechaCorrecta || fpedido.getMonths() > 6);
                     // fecha entrega
                     Period fentrega;
+                    Period antesPedido;
                     do {
                         fechaEntrega = new DateClass();
                         String ds, ms, as;
@@ -904,7 +916,8 @@ public class DispositivosApp {
                         fechaEntrega.setDate(d, m, a);
                         fentrega = Period.between(LocalDate.of(a, m, d), date);
                         fechaCorrecta = fechaEntrega.isDateCorrect();
-                        Period antesPedido = Period.between(LocalDate.of(a, m, d), localDPedido);
+                        antesPedido = Period.between(localDPedido, LocalDate.of(a, m, d));
+                        System.out.print(antesPedido.toString());
                         if (!fechaCorrecta) {
                             JOptionPane.showMessageDialog(null, "La fecha es invalida\n",
                                     "error de entrada", JOptionPane.ERROR_MESSAGE);
@@ -912,13 +925,13 @@ public class DispositivosApp {
                             JOptionPane.showMessageDialog(null,
                                     "La fecha de entrega no puede ser de hace mas de 6 meses o dentro de mas de 6 meses",
                                     "fecha invalida", JOptionPane.ERROR_MESSAGE);
-                        } else if (antesPedido.getMonths() < 0) {
+                        } else if (antesPedido.getDays() < 0) {
                             JOptionPane.showMessageDialog(null,
                                     "La fecha de entrega no puede ser antes de la fecha de pedido",
                                     "fecha invalida", JOptionPane.ERROR_MESSAGE);
                         }
 
-                    } while (!fechaCorrecta || fpedido.getMonths() > 6);
+                    } while (!fechaCorrecta || fpedido.getMonths() > 6 || antesPedido.getDays() < 0);
                     ventas.add(new Venta(id, idDispositivo, idCliente, fechaPedido, fechaEntrega));
                     JOptionPane.showMessageDialog(null, "La venta fue dada de alta exitosamente\n",
                             "Alta de cliente", 3);
@@ -1100,7 +1113,7 @@ public class DispositivosApp {
                         posCoincidencia = buscarIdVenta(ventas, id);
                         if (posCoincidencia != -1) {
                             JOptionPane.showMessageDialog(null, "Coincidencia encontrada, mostrando datos", "Datos encontrados", JOptionPane.INFORMATION_MESSAGE);
-                            JOptionPane.showMessageDialog(null, clientes.get(posCoincidencia).getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, ventas.get(posCoincidencia).getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
                         } else {
                             JOptionPane.showMessageDialog(null, "No se encontraron coincidencias", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         }
@@ -1340,7 +1353,7 @@ public class DispositivosApp {
                 case 17 -> {
                     JOptionPane.showMessageDialog(null, "Gracias por utilizar este programa, Creado por: \n"
                             + "Camargo Oropeza Diego\n"
-                            + "Licona Ibarra Diego Alejandro"
+                            + "Licona Ibarra Diego Alejandro\n"
                             + "Villegas Turrubiartes Melinna");
                 }
                 default -> {
@@ -1352,25 +1365,26 @@ public class DispositivosApp {
 
     }
 
-    public static boolean eliminarVentaEnCascada(ArrayList<Venta> ventas, int idCliente) {
-        for (Venta ven : ventas) {
-            if (ventas.get(ventas.indexOf(ven)).getIdCliente() == idCliente) {
-                ventas.remove(ventas.get(ventas.indexOf(ven)));
-                return true;
+    public static boolean eliminarVentaEnCascada(ArrayList<Venta> ventas, int id) {
+        boolean removed = false;
+        for (int i = ventas.size() - 1; i >= 0; i--) {
+            if (id == ventas.get(i).getIdCliente()) {
+                ventas.remove(i);
+                removed = true;
             }
         }
-        return false;
+        return removed;
     }
 
     public static boolean eliminarVentaEnCascada(ArrayList<Venta> ventas, String idDispositivo) {
-        for (Venta ven : ventas) {
-            if (idDispositivo.equals(ventas.get(ventas.indexOf(ven)).getIdDispositivo())) {
-                ventas.remove(ventas.get(ventas.indexOf(ven)));
-                return true;
+        boolean removed = false;
+        for (int i = ventas.size() - 1; i >= 0; i--) {
+            if (idDispositivo.equals(ventas.get(i).getIdDispositivo())) {
+                ventas.remove(i);
+                removed = true;
             }
         }
-        return false;
-
+        return removed;
     }
 
     public static boolean ventaContieneCliente(ArrayList<Venta> ventas, int idCliente) {
