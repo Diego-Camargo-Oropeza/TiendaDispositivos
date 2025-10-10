@@ -55,13 +55,15 @@ public class DispositivosApp {
             + "Por favor seleccione una opción\n";
 
     public static void main(String[] args) {
-        int op, id = 0, memoriaRam, almacenamiento, posCoincidencia, cuenta;
+        int op, id = 0, idCliente = 0, memoriaRam, almacenamiento, posCoincidencia, cuenta;
         float peso, precio, tamanioPantalla;
         String idDispositivo, marca, modelo, sistemaOperativo, nombre, direccion, identificacion, telefono, tipo, correoElectronico, procesador, tarjetaGrafica;
         String tablaSmartphone, tablaLaptop, listaCliente, listaVenta;
         DateClass fechaNacimiento, fechaPedido, fechaEntrega;
         ArrayList<Dispositivo> dispositivos = new ArrayList<>();
         ArrayList<Cliente> clientes = new ArrayList<>();
+        ArrayList<Venta> ventas = new ArrayList<>();
+
         boolean valido;
         LocalDate date = LocalDate.now();
         int aActual = date.getYear();
@@ -432,7 +434,7 @@ public class DispositivosApp {
 
                 // alta de cliente
                 case 3 -> {
-
+                    JOptionPane.showMessageDialog(null, "Alta de un cliente");
                     do {
                         // id
                         String i;
@@ -451,6 +453,11 @@ public class DispositivosApp {
                                         + "debe ser mayor a cero",
                                         "Error de entrada",
                                         JOptionPane.ERROR_MESSAGE);
+                            }
+                            posCoincidencia = buscarIdCliente(clientes, id);
+                            if (posCoincidencia != -1) {
+                                JOptionPane.showMessageDialog(null, "ID duplicado, vuelva a ingresar otro", "Error", JOptionPane.ERROR_MESSAGE);
+                                id = 0;
                             }
                         } catch (NumberFormatException e) {
                             JOptionPane.showMessageDialog(null, "El id"
@@ -632,6 +639,13 @@ public class DispositivosApp {
                             "Alta de cliente", 3);
                 }
                 case 4 -> {
+
+                    if (dispositivos.isEmpty() || clientes.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No hay dispositivos y/o clientes dados de alta como para poder registrar una venta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        continue MENU_LOOP;
+                    }
+
+                    JOptionPane.showMessageDialog(null, "Alta de una venta");
                     // alta de venta
                     String iv, ic;
                     // id venta
@@ -652,6 +666,14 @@ public class DispositivosApp {
                                         "Error de entrada",
                                         JOptionPane.ERROR_MESSAGE);
                             }
+
+                            posCoincidencia = buscarIdVenta(ventas, id);
+
+                            if (posCoincidencia != -1) {
+                                JOptionPane.showMessageDialog(null, "ID duplicado, vuelva a ingresar otro", "Error", JOptionPane.ERROR_MESSAGE);
+                                id = 0;
+                            }
+
                         } catch (NumberFormatException e) {
                             JOptionPane.showMessageDialog(null, "El id"
                                     + " debe de ser numerico", "Error de"
@@ -659,8 +681,9 @@ public class DispositivosApp {
                         }
                     } while (id <= 0);
                     // id dispositivo
+                    boolean formato, existe;
                     do {
-                        valido = true;
+                        existe = false;
                         idDispositivo = JOptionPane.showInputDialog(null, "ID del dispositivo",
                                 "Alta de Venta", 3);
                         if (idDispositivo == null) {
@@ -668,50 +691,59 @@ public class DispositivosApp {
                             continue MENU_LOOP;
                         }
                         idDispositivo = idDispositivo.trim();
-
-                        boolean noDuped, formato;
-
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+                        if (posCoincidencia == -1) {
+                            JOptionPane.showMessageDialog(null, "El ID ingresado no existe dentro de los dispositivos dados de alta, intente de nuevo");
+                            existe = false;
+                        } else {
+                            existe = true;
+                        }
                         formato = cadenaValida(idDispositivo, 1);
                         if (!formato) {
                             JOptionPane.showMessageDialog(null, "Revisa la entrada, existen caracteres especiales o espacios",
                                     "Advertencia", JOptionPane.WARNING_MESSAGE);
                         }
-
-                        posCoincidencia = buscarId(dispositivos, idDispositivo);
-
-                        noDuped = (posCoincidencia == -1);
-                        if (!noDuped) {
-                            JOptionPane.showMessageDialog(null, "ID duplicado, vuelva a ingresar otro",
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-
-                        valido = noDuped && formato;
+                        valido = existe && formato;
 
                     } while (!valido);
                     // id cliente
+                    boolean idValida = false;
                     do {
-                        id = 0;
+                        idCliente = 0;
+
                         try {
                             ic = JOptionPane.showInputDialog(null,
-                                    "ID de la venta: ", "Alta de venta",
+                                    "ID del cliente: ", "Alta de venta",
                                     3);
                             if (ic == null) {
                                 JOptionPane.showMessageDialog(null, "Operación cancelada, regresando al menú");
                                 continue MENU_LOOP;
                             }
-                            id = Integer.parseInt(ic);
-                            if (id <= 0) {
+                            idCliente = Integer.parseInt(ic);
+                            if (idCliente <= 0) {
                                 JOptionPane.showMessageDialog(null, "El id "
                                         + "debe ser mayor a cero",
                                         "Error de entrada",
                                         JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                idValida = true;
+                            }
+
+                            posCoincidencia = buscarIdCliente(clientes, idCliente);
+                            if (posCoincidencia == -1) {
+                                JOptionPane.showMessageDialog(null, "El ID ingresado no existe dentro de los clientes dados de alta, intente de nuevo");
+                                existe = false;
+                            } else {
+                                existe = true;
                             }
                         } catch (NumberFormatException e) {
                             JOptionPane.showMessageDialog(null, "El id"
                                     + " debe de ser numerico", "Error de"
                                     + " entrada", JOptionPane.ERROR_MESSAGE);
                         }
-                    } while (id <= 0);
+                        valido = idValida && existe;
+                    } while (!valido);
+
                     // fecha pedido
                     LocalDate localDPedido;
                     boolean fechaCorrecta = false;
@@ -887,6 +919,9 @@ public class DispositivosApp {
                         }
 
                     } while (!fechaCorrecta || fpedido.getMonths() > 6);
+                    ventas.add(new Venta(id, idDispositivo, idCliente, fechaPedido, fechaEntrega));
+                    JOptionPane.showMessageDialog(null, "La venta fue dada de alta exitosamente\n",
+                            "Alta de cliente", 3);
 
                 }
                 case 5 -> {
@@ -954,24 +989,22 @@ public class DispositivosApp {
                         }
                         JOptionPane.showMessageDialog(null, listaCliente, "Lista de Laptops", JOptionPane.INFORMATION_MESSAGE);
                     }
-// listar cliente
+                    // listar cliente
                 }
                 case 8 -> {
 
                     listaVenta = "         LISTA DE VENTAS        \n"
                             + "IdVenta          IdDispositivo         IdCliente          Fecha Pedido         Fecha Entrega\n";
-                    if (dispositivos.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "No existen dispositivos dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    if (ventas.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen ventas dadas de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     } else {
-                        for (Cliente cl : clientes) {
-                            listaVenta += cl.getIdCliente() + "         " + cl.getNombre() + "          " + cl.getIdentificacion() + "         " + cl.getTipo() + "       " + cl.getTelefono()
-                                    + "      " + cl.getFechaNacimiento() + "\n";
+                        for (Venta ven : ventas) {
+                            listaVenta += ven.getIdVenta() + "         " + ven.getIdDispositivo() + "          " + ven.getFechaPedido() + "         " + ven.getFechaEntrega() + "\n";
 
                         }
 
                         JOptionPane.showMessageDialog(null, listaVenta, "Lista de Laptops", JOptionPane.INFORMATION_MESSAGE);
                     }
-
                 }
 
                 case 9 -> {
@@ -1044,27 +1077,271 @@ public class DispositivosApp {
                 }
 
                 case 12 -> {
-                    //DETALLE DE VENTA PENDIENTE
+                    //DETALLE DE VENTA
+                    String idH = "";
+                    valido = true;
+                    if (ventas.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen ventas dadas de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        idH = JOptionPane.showInputDialog("Ingrese el ID de la venta a buscar");
+                        if (idH == null) {
+                            JOptionPane.showMessageDialog(null, "Operación cancelada", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            continue MENU_LOOP;
+                        }
+                        do {
+                            try {
+                                id = Integer.parseInt(idH);
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "El ID de las ventas es un dato numérico", "Error", JOptionPane.ERROR_MESSAGE);
+                                valido = false;
+                            }
+                        } while (!valido);
+
+                        posCoincidencia = buscarIdVenta(ventas, id);
+                        if (posCoincidencia != -1) {
+                            JOptionPane.showMessageDialog(null, "Coincidencia encontrada, mostrando datos", "Datos encontrados", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, clientes.get(posCoincidencia).getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No se encontraron coincidencias", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
 
                 }
                 case 13 -> {
                     //ELIMINAR SMARTPHONE
+                    int res;
+                    boolean contiene, esSmartphone = false, eliminado;
+                    if (dispositivos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen Smartphone dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Eliminar un elemento de la lista de Smartphones\nRecuerde que una vez eliminados no se pueden recuperar.");
+                        idDispositivo = JOptionPane.showInputDialog(null, "Ingrese el ID del Smartphone que desea eliminar", "Eliminar Smartphone", JOptionPane.QUESTION_MESSAGE);
+                        if (idDispositivo == null) {
+                            JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        contiene = ventaContieneDispositivo(ventas, idDispositivo);
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+                        if (posCoincidencia != -1) {
+                            if (dispositivos.get(posCoincidencia) instanceof Smartphone s) {
+                                esSmartphone = true;
+                            } else {
+                                JOptionPane.showMessageDialog(null, "El ID pertenece al registro de Laptops", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                continue MENU_LOOP;
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No existen coincidencias con este ID", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            continue MENU_LOOP;
+                        }
+                        valido = contiene && esSmartphone;
+                        if (valido) {
+                            JOptionPane.showMessageDialog(null, "Este dispositivo está dado de alta en un registro de venta, al aceptar se eliminarán todos los registros de venta que hagan referencia al mismo dispositivo", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?: \n", "Eliminar Smartphone", JOptionPane.YES_NO_OPTION);
+                            if (res == JOptionPane.YES_OPTION) {
+                                eliminado = eliminarVentaEnCascada(ventas, idDispositivo);
+                                if (eliminado) {
+                                    dispositivos.remove(posCoincidencia);
+                                    JOptionPane.showMessageDialog(null, "El dispositivo junto con todas sus referencias han sido eliminadas correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Existió un error al eliminar...", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } else if (res == JOptionPane.NO_OPTION) {
+                                JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                        }
+
+                        if (esSmartphone && !contiene) {
+                            JOptionPane.showMessageDialog(null, "Este dispositivo será eliminado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?: \n", "Eliminar Smartphone", JOptionPane.YES_NO_OPTION);
+                            if (res == JOptionPane.YES_NO_OPTION) {
+                                dispositivos.remove(posCoincidencia);
+                                JOptionPane.showMessageDialog(null, "El dispositivo ha sido eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            } else if (res == JOptionPane.NO_OPTION) {
+                                JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                        }
+                    }
 
                 }
+
                 case 14 -> {
                     //ELIMINAR LAPTOP
+                    int res;
+                    boolean contiene, esLaptop = false, eliminado;
+                    if (dispositivos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen Smartphone dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Eliminar un elemento de la lista de Laptops\nRecuerde que una vez eliminados no se pueden recuperar");
+                        idDispositivo = JOptionPane.showInputDialog(null, "Ingrese el ID del Laptop que desea eliminar", "Eliminar Smartphone", JOptionPane.QUESTION_MESSAGE);
+                        if (idDispositivo == null) {
+                            JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        contiene = ventaContieneDispositivo(ventas, idDispositivo);
+                        posCoincidencia = buscarId(dispositivos, idDispositivo);
+                        if (posCoincidencia != -1) {
+                            if (dispositivos.get(posCoincidencia) instanceof Laptop) {
+                                esLaptop = true;
+                            } else {
+                                JOptionPane.showMessageDialog(null, "El ID pertenece al registro de Smartphones", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                                continue MENU_LOOP;
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No existen coincidencias con este ID", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            continue MENU_LOOP;
+                        }
+                        valido = contiene && esLaptop;
+                        if (valido) {
+                            JOptionPane.showMessageDialog(null, "Este dispositivo está referenciado en al menos un registro de venta, al aceptar se eliminarán todos los registros de venta que hagan referencia al mismo dispositivo", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?: \n", "Eliminar Laptop", JOptionPane.YES_NO_OPTION);
+                            if (res == JOptionPane.YES_OPTION) {
+                                eliminado = eliminarVentaEnCascada(ventas, idDispositivo);
+                                if (eliminado) {
+                                    dispositivos.remove(posCoincidencia);
+                                    JOptionPane.showMessageDialog(null, "El dispositivo junto con todas sus referencias han sido eliminadas correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Existió un error al eliminar...", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } else if (res == JOptionPane.NO_OPTION) {
+                                JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                        }
+
+                        if (esLaptop && !contiene) {
+                            JOptionPane.showMessageDialog(null, "Este dispositivo será eliminado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?: \n", "Eliminar Laptop", JOptionPane.YES_NO_OPTION);
+                            if (res == JOptionPane.YES_NO_OPTION) {
+                                dispositivos.remove(posCoincidencia);
+                                JOptionPane.showMessageDialog(null, "El dispositivo ha sido eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            } else if (res == JOptionPane.NO_OPTION) {
+                                JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                                continue MENU_LOOP;
+                            }
+                        }
+                    }
 
                 }
                 case 15 -> {
-                    //ELIMINAR CLIENTE
+                    // ELIMINAR CLIENTE
+                    int res;
+                    boolean contiene;
+                    boolean eliminado;
+                    if (clientes.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen Clientes dados de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        continue MENU_LOOP;
+                    }
+                    JOptionPane.showMessageDialog(null, "Eliminar un elemento de la lista de Clientes\nRecuerde que una vez eliminado no se puede recuperar");
 
+                    boolean repetir;
+                    do {
+                        repetir = false;
+                        String in = JOptionPane.showInputDialog(null, "Ingrese el ID del Cliente que desea eliminar", "Eliminar Cliente", JOptionPane.QUESTION_MESSAGE);
+                        if (in == null) {
+                            JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        if (in.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía", "Error", JOptionPane.ERROR_MESSAGE);
+                            repetir = true;
+                        } else {
+                            try {
+                                idCliente = Integer.parseInt(in);
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "El ID del cliente debe ser numérico", "Error", JOptionPane.ERROR_MESSAGE);
+                                repetir = true;
+                            }
+                        }
+                    } while (repetir);
+
+                    posCoincidencia = buscarIdCliente(clientes, idCliente);
+
+                    if (posCoincidencia == -1) {
+                        JOptionPane.showMessageDialog(null, "No existen coincidencias con este ID de cliente", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        continue MENU_LOOP;
+                    }
+
+                    contiene = ventaContieneCliente(ventas, idCliente);
+
+                    if (contiene) {
+                        JOptionPane.showMessageDialog(null, "Este cliente está referenciado en al menos un registro de venta, al aceptar se eliminarán todos los registros de venta que hagan referencia al mismo cliente", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?", "Eliminar Cliente", JOptionPane.YES_NO_OPTION);
+                        if (res == JOptionPane.YES_OPTION) {
+                            eliminado = eliminarVentaEnCascada(ventas, idCliente); // elimina ventas del cliente
+                            // procedemos a borrar el cliente
+                            clientes.remove(posCoincidencia);
+                            JOptionPane.showMessageDialog(null, "El cliente y todas sus referencias han sido eliminados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Este cliente no tiene ventas asociadas. Será eliminado.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        res = JOptionPane.showConfirmDialog(null, "¿Desea continuar?", "Eliminar Cliente", JOptionPane.YES_NO_OPTION);
+                        if (res == JOptionPane.YES_OPTION) {
+                            clientes.remove(posCoincidencia);
+                            JOptionPane.showMessageDialog(null, "El cliente ha sido eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                    }
                 }
+
                 case 16 -> {
                     //ELIMINAR VENTA
+                    int res;
+                    if (ventas.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No existen Ventas dadas de alta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        continue MENU_LOOP;
+                    }
 
+                    JOptionPane.showMessageDialog(null, "Eliminar un elemento de la lista de Ventas\nRecuerde que una vez eliminado no se puede recuperar");
+
+                    boolean repetir;
+                    do {
+                        repetir = false;
+                        String in = JOptionPane.showInputDialog(null, "Ingrese el ID de la Venta que desea eliminar", "Eliminar Venta", JOptionPane.QUESTION_MESSAGE);
+                        if (in == null) {
+                            JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                            continue MENU_LOOP;
+                        }
+                        if (in.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía", "Error", JOptionPane.ERROR_MESSAGE);
+                            repetir = true;
+                        } else {
+                            try {
+                                id = Integer.parseInt(in);
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(null, "El ID de la venta debe ser numérico", "Error", JOptionPane.ERROR_MESSAGE);
+                                repetir = true;
+                            }
+                        }
+                    } while (repetir);
+
+                    int posVenta = buscarIdVenta(ventas, id);
+                    if (posVenta == -1) {
+                        JOptionPane.showMessageDialog(null, "No existen coincidencias con este ID de venta", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        continue MENU_LOOP;
+                    }
+
+                    res = JOptionPane.showConfirmDialog(null, "Esta venta será eliminada. ¿Desea continuar?", "Eliminar Venta", JOptionPane.YES_NO_OPTION);
+                    if (res == JOptionPane.YES_OPTION) {
+                        ventas.remove(posVenta);
+                        JOptionPane.showMessageDialog(null, "La venta ha sido eliminada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "La operación ha sido cancelada, regresando al menú");
+                        continue MENU_LOOP;
+                    }
                 }
-                case 17 -> {
 
+                case 17 -> {
+                    JOptionPane.showMessageDialog(null, "Gracias por utilizar este programa, Creado por: \n"
+                            + "Camargo Oropeza Diego\n"
+                            + "Licona Ibarra Diego Alejandro"
+                            + "Villegas Turrubiartes Melinna");
                 }
                 default -> {
 
@@ -1072,6 +1349,46 @@ public class DispositivosApp {
             }
 
         } while (op != 17);
+
+    }
+
+    public static boolean eliminarVentaEnCascada(ArrayList<Venta> ventas, int idCliente) {
+        for (Venta ven : ventas) {
+            if (ventas.get(ventas.indexOf(ven)).getIdCliente() == idCliente) {
+                ventas.remove(ventas.get(ventas.indexOf(ven)));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean eliminarVentaEnCascada(ArrayList<Venta> ventas, String idDispositivo) {
+        for (Venta ven : ventas) {
+            if (idDispositivo.equals(ventas.get(ventas.indexOf(ven)).getIdDispositivo())) {
+                ventas.remove(ventas.get(ventas.indexOf(ven)));
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public static boolean ventaContieneCliente(ArrayList<Venta> ventas, int idCliente) {
+        for (Venta v : ventas) {
+            if (v.getIdCliente() == idCliente) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean ventaContieneDispositivo(ArrayList<Venta> ventas, String idDispositivo) {
+        for (Venta v : ventas) {
+            if (idDispositivo.equals(v.getIdDispositivo())) {
+                return true;
+            }
+        }
+        return false;
 
     }
 
@@ -1102,7 +1419,7 @@ public class DispositivosApp {
 
     public static int buscarIdVenta(ArrayList<Venta> ventas, int id) {
         for (Venta v : ventas) {
-            if (id == v.getIdCliente()) {
+            if (id == v.getIdVenta()) {
                 return ventas.indexOf(v);
             }
         }
