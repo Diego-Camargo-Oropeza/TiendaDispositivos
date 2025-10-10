@@ -1202,8 +1202,12 @@ public class DispositivosApp {
 
                         posCoincidencia = buscarIdVenta(ventas, id);
                         if (posCoincidencia != -1) {
+                            idDispositivo = ventas.get(posCoincidencia).getIdDispositivo();
+                            id = ventas.get(posCoincidencia).getIdCliente();
                             JOptionPane.showMessageDialog(null, "Coincidencia encontrada, mostrando datos", "Datos encontrados", JOptionPane.INFORMATION_MESSAGE);
-                            JOptionPane.showMessageDialog(null, ventas.get(posCoincidencia).getDatos(), "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, ventas.get(posCoincidencia).getDatos() + "\n"
+                                    + dispositivos.get(posCoincidencia).getDatos() + "\n"
+                                    + clientes.get(posCoincidencia).getDatos() + "\n", "Datos de la busqueda", JOptionPane.INFORMATION_MESSAGE);
                         } else {
                             JOptionPane.showMessageDialog(null, "No se encontraron coincidencias", "Advertencia", JOptionPane.WARNING_MESSAGE);
                         }
